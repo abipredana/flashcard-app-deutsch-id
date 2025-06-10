@@ -692,12 +692,22 @@ exportFolderBtn.onclick = () => {
   }
 
   function playGermanTTS(text) {
-    if (!('speechSynthesis' in window)) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'de-DE';
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+  if (!('speechSynthesis' in window)) return;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'de-DE';
+
+  const voices = speechSynthesis.getVoices();
+  const germanVoice = voices.find(v => v.lang === 'de-DE' && v.name.toLowerCase().includes('anna'));
+
+  if (germanVoice) {
+    utterance.voice = germanVoice;
   }
+
+  window.speechSynthesis.cancel(); // stop suara sebelumnya
+  window.speechSynthesis.speak(utterance);
+}
+
 </script>
 
 </body>
