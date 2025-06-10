@@ -719,12 +719,26 @@ exportFolderBtn.onclick = () => {
   }
 
   function playGermanTTS(text) {
-    if (!('speechSynthesis' in window)) return;
-    const utterance = new SpeechSynthesisUtterance(text);
+  if (!('speechSynthesis' in window)) return;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  const voices = speechSynthesis.getVoices();
+  
+  // Cari voice Jerman asli
+  const germanVoice = voices.find(v => v.lang === 'de-DE');
+
+  if (germanVoice) {
+    utterance.voice = germanVoice;
     utterance.lang = 'de-DE';
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+  } else {
+    alert('Voice Bahasa Jerman tidak ditemukan. Silakan aktifkan voice German di pengaturan iPhone.');
+    return;
   }
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utterance);
+}
+
 </script>
 </body>
 </html>
