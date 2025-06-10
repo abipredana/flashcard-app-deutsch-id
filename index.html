@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcard Bahasa Indonesia - Jerman</title>
+  <style>
+    @media (max-width: 600px) {
+  .container {
+    padding: 12px;
+  }
+
+  .flashcard,
+  .review-card {
+    width: 100%;
+    max-width: 320px;
+    height: 180px;
+  }
+
+  .card-front,
+  .card-back {
+    font-size: 1.2rem;
+    padding: 16px;
+  }
+
+  button, input[type="text"], input[type="number"] {
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .btn-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .folder-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .delete-card-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    top: 6px;
+    left: 6px;
+  }
+}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0; background: #f0f4f8; color: #333;
+  }
+  header {
+    background: #222831;
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+  .container {
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+  }
+  button {
+    background-color: #2d3a50;
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #1c2536;
+  }
+  input[type=text], input[type=number] {
+    padding: 8px;
+    margin: 8px 0;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  h2 {
+    margin-top: 40px;
+  }
+  .folder-list {
+    margin-top: 20px;
+  }
+  .folder-item {
+    padding: 10px;
+    background: white;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  }
+  .folder-item:hover {
+    background: #dde6f7;
+  }
+  .flashcard,
+.review-card {
+  width: 240px;
+  height: 150px;
+  perspective: 1000px;
+  margin: 0 auto 30px auto; /* tengah + jarak bawah */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  backface-visibility: hidden;
+}
+.flashcard, .review-card {
+  width: 240px;
+  height: 150px;
+  margin: 0 auto 30px auto;
+  perspective: 1000px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-front, .card-back {
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.card-front, .card-back {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.flashcard:not(.review-card) {
+  margin-bottom: 30px;
+}
+
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+  cursor: pointer;
+}
+
+  .card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.6rem;
+    padding: 20px;
+  }
+  .card-front {
+    background-color: #f9fafb;
+    color: #333;
+    border: 2px solid #2d3a50;
+  }
+  .card-back {
+    background-color: #2d3a50;
+    color: white;
+    transform: rotateY(180deg);
+    border: 2px solid #2d3a50;
+  }
+  .flashcard-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .delete-card-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  background: #2d3a50;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 18px;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  line-height: 1;
+}
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+    justify-content: center;
+  }
+ 
+.review-card .card-inner {
+  transform-origin: center center;
+}
+  .hidden {
+    display: none;
+  }
+  .btn-group {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.difficulty-btn.easy,
+.difficulty-btn.medium,
+.difficulty-btn.hard {
+  background-color: #2d3a50;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+.flashcard,
+.card-inner,
+.card-front,
+.card-back {
+  cursor: pointer;
+}
+
+  </style>
+</head>
+<body>
+<header>
+  <h1>Flashcard Bahasa Indonesia - Jerman</h1>
+</header>
+
+<div class="container" id="folderPage">
+  <h2>Buat Folder Baru</h2>
+  <form id="createFolderForm">
+    <input type="text" id="newFolderName" placeholder="Nama folder baru"  autocomplete="off" required />
+    <button type="submit">Buat Folder</button>
+    <!-- Untuk Import Folder -->
+<button id="importFolderBtn">Import Folder</button>
+<input type="file" id="importFolderInput" accept=".json" style="display:none;">
+
+  </form>
+
+  <h2>Folder yang Tersedia</h2>
+  <div class="folder-list" id="folderList"></div>
+</div>
+
+<div class="container hidden" id="flashcardPage">
+  <h2 id="folderTitle"></h2>
+  <button id="backToFolder">Kembali ke Folder</button>
+  <!-- Untuk Export Folder -->
+<button id="exportFolderBtn">Export Folder</button>
+
+
+  <div class="controls">
+    <input type="number" id="reviewCount" min="1" value="" placeholder="0" style="width: 80px; font-size: 1.2rem;" />
+    <button id="startReviewBtn">Review</button>
+  </div>
+
+  <h3>Tambah Flashcard</h3>
+  <form id="addCardForm">
+    <input type="text" id="indonesiaText" placeholder="Bahasa Indonesia"  autocomplete="off" required />
+    <input type="text" id="germanText" placeholder="Bahasa Jerman"  autocomplete="off" required />
+    <button type="submit">Tambah Kartu</button>
+  </form>
+
+  <h3>Daftar Flashcard</h3>
+  <div class="flashcard-list" id="flashcardList"></div>
+</div>
+
+<div class="container hidden" id="reviewPage">
+  <h2>Review Flashcard</h2>
+  <button id="backToFlashcardBtn">Kembali</button>
+
+  <div id="reviewFlashcardContainer" class="flashcard review-card"></div>
+
+  <div class="btn-group" id="difficultyButtons" style="margin-top: 15px; justify-content:center;">
+    <button class="difficulty-btn easy">Easy</button>
+    <button class="difficulty-btn medium">Medium</button>
+    <button class="difficulty-btn hard">Hard</button>
+  </div>
+</div>
+
+<script>
+  let folders = {};
+  let currentFolder = null;
+  let reviewCards = [];
+  let currentReviewIndex = 0;
+
+  // --- Load from localStorage, dengan validasi
+  if (localStorage.getItem('flashcardFolders')) {
+    try {
+      const data = JSON.parse(localStorage.getItem('flashcardFolders'));
+      if (data && typeof data === 'object' && !Array.isArray(data)) {
+        folders = data;
+      }
+    } catch (e) {
+      console.error('Gagal memuat data dari localStorage:', e);
+    }
+  }
+
+  // --- Folder Page ---
+  const folderListEl = document.getElementById('folderList');
+  const createFolderForm = document.getElementById('createFolderForm');
+  const newFolderNameInput = document.getElementById('newFolderName');
+
+  function saveFolders() {
+    localStorage.setItem('flashcardFolders', JSON.stringify(folders));
+  }
+  // --- Import Folder (halaman depan)
+const importFolderBtn = document.getElementById('importFolderBtn');
+const importFolderInput = document.getElementById('importFolderInput');
+
+importFolderBtn.onclick = () => {
+  importFolderInput.click();
+};
+
+importFolderInput.onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const imported = JSON.parse(event.target.result);
+      if (!imported.name || !Array.isArray(imported.cards)) {
+        alert('Format file tidak valid.');
+        return;
+      }
+
+      let newName = imported.name;
+      let counter = 1;
+      while (folders[newName]) {
+        newName = `${imported.name} (${counter++})`;
+      }
+
+      folders[newName] = imported.cards;
+      saveFolders();
+      renderFolders();
+      alert(`Folder "${newName}" berhasil diimpor.`);
+    } catch (e) {
+      alert('Gagal membaca file: ' + e.message);
+    }
+  };
+  reader.readAsText(file);
+};
+
+// --- Export Folder (halaman dalam folder)
+const exportFolderBtn = document.getElementById('exportFolderBtn');
+
+exportFolderBtn.onclick = () => {
+  if (!currentFolder || !folders[currentFolder]) {
+    alert('Tidak ada folder terbuka.');
+    return;
+  }
+
+  const dataStr = JSON.stringify({
+    name: currentFolder,
+    cards: folders[currentFolder]
+  }, null, 2);
+
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${currentFolder}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+  function renderFolders() {
+  folderListEl.innerHTML = '';
+  for (const folderName in folders) {
+    if (!folders.hasOwnProperty(folderName) || !isNaN(folderName)) continue;
+
+    const div = document.createElement('div');
+    div.className = 'folder-item';
+    div.onclick = () => openFolder(folderName);
+
+    // Container untuk teks agar tombol tidak mengganggu klik folder
+    const textSpan = document.createElement('span');
+    textSpan.textContent = folderName;
+
+    // Tombol Edit
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.className = ''; // reset class agar style inline konsisten
+    editBtn.style.backgroundColor = '#2d3a50';
+    editBtn.style.color = 'white';
+    editBtn.style.border = 'none';
+    editBtn.style.borderRadius = '5px';
+    editBtn.style.padding = '10px 16px';
+    editBtn.style.cursor = 'pointer';
+    editBtn.style.fontSize = '1rem';
+    editBtn.style.transition = 'background-color 0.3s ease';
+    editBtn.onmouseover = () => (editBtn.style.backgroundColor = '#1c2536');
+    editBtn.onmouseout = () => (editBtn.style.backgroundColor = '#2d3a50');
+    editBtn.onclick = (e) => {
+      e.stopPropagation();
+      const newName = prompt('Masukkan nama folder baru:', folderName);
+      if (newName) {
+        const trimmedName = newName.trim();
+        if (!trimmedName) {
+          alert('Nama folder tidak boleh kosong!');
+          return;
+        }
+        if (folders[trimmedName] && trimmedName !== folderName) {
+          alert('Nama folder sudah ada!');
+          return;
+        }
+        folders[trimmedName] = folders[folderName];
+        delete folders[folderName];
+        saveFolders();
+        renderFolders();
+      }
+    };
+
+    // Tombol Hapus
+    const delBtn = document.createElement('button');
+    delBtn.textContent = 'Hapus';
+    delBtn.style.backgroundColor = '#2d3a50';
+    delBtn.style.color = 'white';
+    delBtn.style.border = 'none';
+    delBtn.style.borderRadius = '5px';
+    delBtn.style.padding = '10px 16px';
+    delBtn.style.cursor = 'pointer';
+    delBtn.style.fontSize = '1rem';
+    delBtn.style.transition = 'background-color 0.3s ease';
+    delBtn.onmouseover = () => (delBtn.style.backgroundColor = '#1c2536');
+    delBtn.onmouseout = () => (delBtn.style.backgroundColor = '#2d3a50');
+    delBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (confirm(`Hapus folder "${folderName}" beserta isinya?`)) {
+
+        delete folders[folderName];
+        saveFolders();
+        renderFolders();
+      }
+    };
+
+    // Container tombol supaya rapih dan berjajar
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.gap = '10px';
+
+    buttonContainer.appendChild(editBtn);
+    buttonContainer.appendChild(delBtn);
+
+    // Kosongkan div lalu masukkan teks dan tombol
+    div.textContent = '';
+    div.appendChild(textSpan);
+    div.appendChild(buttonContainer);
+
+    folderListEl.appendChild(div);
+  }
+}
+
+
+
+  createFolderForm.onsubmit = e => {
+    e.preventDefault();
+    const name = newFolderNameInput.value.trim();
+    if (!name) {
+      alert('Nama folder tidak boleh kosong!');
+      return;
+    }
+    if (folders[name]) {
+      alert('Folder sudah ada!');
+      return;
+    }
+    folders[name] = [];
+    saveFolders();
+    renderFolders();
+    newFolderNameInput.value = '';
+  };
+
+  renderFolders();
+
+  // --- Flashcard Page ---
+  const flashcardPage = document.getElementById('flashcardPage');
+  const folderPage = document.getElementById('folderPage');
+  const folderTitle = document.getElementById('folderTitle');
+  const backToFolderBtn = document.getElementById('backToFolder');
+  const addCardForm = document.getElementById('addCardForm');
+  const indonesiaInput = document.getElementById('indonesiaText');
+  const germanInput = document.getElementById('germanText');
+  const flashcardList = document.getElementById('flashcardList');
+  const reviewCountInput = document.getElementById('reviewCount');
+  const startReviewBtn = document.getElementById('startReviewBtn');
+
+  function openFolder(name) {
+    currentFolder = name;
+    folderTitle.textContent = `Folder: ${name}`;
+
+    folderPage.classList.add('hidden');
+    flashcardPage.classList.remove('hidden');
+    renderFlashcards();
+  }
+
+  backToFolderBtn.onclick = () => {
+    currentFolder = null;
+    flashcardPage.classList.add('hidden');
+    folderPage.classList.remove('hidden');
+  };
+
+  function renderFlashcards() {
+    flashcardList.innerHTML = '';
+    if (!folders[currentFolder]) return;
+    folders[currentFolder].forEach((card, idx) => {
+      const cardEl = createFlashcardElement(card, idx, false);
+      flashcardList.appendChild(cardEl);
+    });
+  }
+
+  function createFlashcardElement(card, index, isReview) {
+  const flashcard = document.createElement('div');
+  flashcard.className = 'flashcard';
+  if (isReview) flashcard.classList.add('review-card');
+
+  const cardInner = document.createElement('div');
+  cardInner.className = 'card-inner';
+
+  const front = document.createElement('div');
+  front.className = 'card-front';
+  front.textContent = card.indonesia;
+
+  const back = document.createElement('div');
+  back.className = 'card-back';
+  back.textContent = card.german;
+
+  cardInner.appendChild(front);
+  cardInner.appendChild(back);
+  flashcard.appendChild(cardInner);
+
+  // ✅ Pasang event flip di flashcard, bukan di cardInner
+  flashcard.addEventListener('click', function (e) {
+    // Cegah flip kalau yang diklik adalah tombol hapus
+    if (e.target.classList.contains('delete-card-btn')) return;
+
+    cardInner.classList.toggle('flipped');
+    if (cardInner.classList.contains('flipped')) {
+      playGermanTTS(card.german);
+    }
+  });
+
+  if (!isReview) {
+    const delBtn = document.createElement('button');
+    delBtn.className = 'delete-card-btn';
+    delBtn.textContent = '×';
+    delBtn.title = 'Hapus kartu';
+    delBtn.onclick = e => {
+      e.stopPropagation(); // Penting: mencegah flip saat klik tombol
+      if (confirm('Hapus kartu ini?')) {
+        folders[currentFolder].splice(index, 1);
+        saveFolders();
+        renderFlashcards();
+      }
+    };
+    flashcard.appendChild(delBtn);
+  }
+
+  return flashcard;
+}
+
+
+  addCardForm.onsubmit = e => {
+    e.preventDefault();
+    const indo = indonesiaInput.value.trim();
+    const german = germanInput.value.trim();
+    if (!indo || !german) {
+      alert('Isi kedua bahasa!');
+      return;
+    }
+    folders[currentFolder].push({ indonesia: indo, german: german, difficulty: 'medium' });
+    saveFolders();
+    renderFlashcards();
+    indonesiaInput.value = '';
+    germanInput.value = '';
+  };
+
+  // --- Review Page ---
+  const reviewPage = document.getElementById('reviewPage');
+  const backToFlashcardBtn = document.getElementById('backToFlashcardBtn');
+  const reviewFlashcardContainer = document.getElementById('reviewFlashcardContainer');
+  const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+
+  startReviewBtn.onclick = () => {
+  let count = parseInt(reviewCountInput.value);
+  if (isNaN(count) || count < 1) {
+    count = 3; // default kalau kosong atau invalid
+  }
+  if (!folders[currentFolder] || folders[currentFolder].length === 0) {
+    alert('Folder kosong');
+    return;
+  }
+  reviewCards = [...folders[currentFolder]];
+  shuffleArray(reviewCards);
+  reviewCards = reviewCards.slice(0, count);
+  currentReviewIndex = 0;
+
+  showReviewCard();
+  flashcardPage.classList.add('hidden');
+  reviewPage.classList.remove('hidden');
+};
+
+
+  backToFlashcardBtn.onclick = () => {
+    reviewPage.classList.add('hidden');
+    flashcardPage.classList.remove('hidden');
+  };
+
+  function showReviewCard() {
+  // Bersihkan isi container review tanpa menghapus elemen DOM secara kasar
+  while (reviewFlashcardContainer.firstChild) {
+    reviewFlashcardContainer.removeChild(reviewFlashcardContainer.firstChild);
+  }
+
+  if (currentReviewIndex >= reviewCards.length) {
+    alert('Review selesai!');
+    reviewPage.classList.add('hidden');
+    flashcardPage.classList.remove('hidden');
+    return;
+  }
+
+  const card = reviewCards[currentReviewIndex];
+  const cardEl = createFlashcardElement(card, -1, true);
+  reviewFlashcardContainer.appendChild(cardEl);
+
+  difficultyButtons.forEach(btn => {
+    // Tambahkan event listener satu kali per panggilan
+    btn.onclick = () => {
+      card.difficulty = btn.classList.contains('easy') ? 'easy' :
+                        btn.classList.contains('medium') ? 'medium' : 'hard';
+
+      const originalCard = folders[currentFolder].find(c =>
+        c.indonesia === card.indonesia && c.german === card.german
+      );
+      if (originalCard) originalCard.difficulty = card.difficulty;
+
+      saveFolders();
+      currentReviewIndex++;
+      showReviewCard(); // Tampilkan kartu selanjutnya
+    };
+  });
+}
+
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  function playGermanTTS(text) {
+    if (!('speechSynthesis' in window)) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'de-DE';
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  }
+</script>
+
+</body>
+</html>
