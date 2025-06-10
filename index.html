@@ -727,17 +727,13 @@ exportFolderBtn.onclick = () => {
   // Cari voice Jerman asli
   const germanVoice = voices.find(v => v.lang === 'de-DE');
 
-  if (germanVoice) {
-    utterance.voice = germanVoice;
+ function playGermanTTS(text) {
+    if (!('speechSynthesis' in window)) return;
+    const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'de-DE';
-  } else {
-    alert('Voice Bahasa Jerman tidak ditemukan. Silakan aktifkan voice German di pengaturan iPhone.');
-    return;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
   }
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utterance);
-}
 
 </script>
 </body>
