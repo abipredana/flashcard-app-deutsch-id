@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="id">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Flashcard Bahasa Indonesia - Jerman</title>
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcard Bahasa Indonesia - Jerman</title>
+  <style>
     @media (max-width: 600px) {
   .container {
     padding: 12px;
@@ -260,98 +259,72 @@
 .card-back {
   cursor: pointer;
 }
-.form-button-group {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.folder-input-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 15px;
-  margin-bottom: 20px;
-}
-
-.folder-input-group input[type="text"] {
-  flex: 1 1 250px;
-  max-width: 300px;
-}
-
-@media (max-width: 600px) {
-  .folder-input-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .folder-input-group input,
-  .folder-input-group button {
-    width: 100%;
-  }
-}
-
-
 
   </style>
 </head>
 <body>
 <header>
-<h1>Flashcard Bahasa Indonesia - Jerman</h1>
+  <h1>Flashcard Bahasa Indonesia - Jerman</h1>
 </header>
+
 <div class="container" id="folderPage">
-<h2>New Folder</h2>
-<form id="createFolderForm">
-<div class="folder-input-group">
-<input autocomplete="off" id="newFolderName" placeholder="Nama folder baru" required="" type="text"/>
-<button type="submit">Buat Folder</button>
-<button id="importFolderBtn" type="button">Import Folder</button>
+  <h2>Buat Folder Baru</h2>
+  <form id="createFolderForm">
+    <input type="text" id="newFolderName" placeholder="Nama folder baru"  autocomplete="off" required />
+    <button type="submit">Buat Folder</button>
+    <!-- Untuk Import Folder -->
+<button id="importFolderBtn">Import Folder</button>
+<input type="file" id="importFolderInput" accept=".json" style="display:none;">
+
+  </form>
+
+  <h2>Folder yang Tersedia</h2>
+  <div class="folder-list" id="folderList"></div>
 </div>
-<input accept=".json" id="importFolderInput" style="display:none;" type="file"/>
-</form>
-<h2>Folder yang Tersedia</h2>
-<div class="folder-list" id="folderList"></div>
-</div>
+
 <div class="container hidden" id="flashcardPage">
-<h2 id="folderTitle"></h2>
-<div class="form-button-group">
-<button id="backToFolder">Kembali ke Folder</button>
+  <h2 id="folderTitle"></h2>
+  <button id="backToFolder">Kembali ke Folder</button>
+  <!-- Untuk Export Folder -->
 <button id="exportFolderBtn">Export Folder</button>
+
+
+  <div class="controls">
+    <input type="number" id="reviewCount" min="1" value="" placeholder="0" style="width: 80px; font-size: 1.2rem;" />
+    <button id="startReviewBtn">Review</button>
+  </div>
+
+  <h3>Tambah Flashcard</h3>
+  <form id="addCardForm">
+    <input type="text" id="indonesiaText" placeholder="Bahasa Indonesia"  autocomplete="off" required />
+    <input type="text" id="germanText" placeholder="Bahasa Jerman"  autocomplete="off" required />
+    <button type="submit">Tambah Kartu</button>
+  </form>
+
+  <h3>Daftar Flashcard</h3>
+  <div class="flashcard-list" id="flashcardList"></div>
 </div>
-<div class="controls">
-<input id="reviewCount" min="1" placeholder="0" style="width: 80px; font-size: 1.2rem;" type="number" value="">
-<button id="startReviewBtn">Review</button>
-</input></div>
-<h3>Tambah Flashcard</h3>
-<form id="addCardForm">
-<input autocomplete="off" id="indonesiaText" placeholder="Bahasa Indonesia" required="" type="text"/>
-<input autocomplete="off" id="germanText" placeholder="Bahasa Jerman" required="" type="text"/>
-<button type="submit">Tambah Kartu</button>
-</form>
-<h3>Daftar Flashcard</h3>
-<div class="flashcard-list" id="flashcardList"></div>
-</div>
+
 <div class="container hidden" id="reviewPage">
-<h2>Review Flashcard</h2>
-<button id="backToFlashcardBtn">Kembali</button>
-<div class="flashcard review-card" id="reviewFlashcardContainer"></div>
-<div class="btn-group" id="difficultyButtons" style="margin-top: 15px; justify-content:center;">
-<button class="difficulty-btn easy">Easy</button>
-<button class="difficulty-btn medium">Medium</button>
-<button class="difficulty-btn hard">Hard</button>
+  <h2>Review Flashcard</h2>
+  <button id="backToFlashcardBtn">Kembali</button>
+
+  <div id="reviewFlashcardContainer" class="flashcard review-card"></div>
+
+  <div class="btn-group" id="difficultyButtons" style="margin-top: 15px; justify-content:center;">
+    <button class="difficulty-btn easy">Easy</button>
+    <button class="difficulty-btn medium">Medium</button>
+    <button class="difficulty-btn hard">Hard</button>
+  </div>
 </div>
-</div>
+
 <script>
   let folders = {};
   let currentFolder = null;
   let reviewCards = [];
   let currentReviewIndex = 0;
 
-  
+  // --- Load from localStorage, dengan validasi
   if (localStorage.getItem('flashcardFolders')) {
     try {
       const data = JSON.parse(localStorage.getItem('flashcardFolders'));
@@ -363,7 +336,7 @@
     }
   }
 
-  
+  // --- Folder Page ---
   const folderListEl = document.getElementById('folderList');
   const createFolderForm = document.getElementById('createFolderForm');
   const newFolderNameInput = document.getElementById('newFolderName');
@@ -371,7 +344,7 @@
   function saveFolders() {
     localStorage.setItem('flashcardFolders', JSON.stringify(folders));
   }
-  
+  // --- Import Folder (halaman depan)
 const importFolderBtn = document.getElementById('importFolderBtn');
 const importFolderInput = document.getElementById('importFolderInput');
 
@@ -409,7 +382,7 @@ importFolderInput.onchange = (e) => {
   reader.readAsText(file);
 };
 
-
+// --- Export Folder (halaman dalam folder)
 const exportFolderBtn = document.getElementById('exportFolderBtn');
 
 exportFolderBtn.onclick = () => {
@@ -443,14 +416,14 @@ exportFolderBtn.onclick = () => {
     div.className = 'folder-item';
     div.onclick = () => openFolder(folderName);
 
-    
+    // Container untuk teks agar tombol tidak mengganggu klik folder
     const textSpan = document.createElement('span');
     textSpan.textContent = folderName;
 
-    
+    // Tombol Edit
     const editBtn = document.createElement('button');
     editBtn.textContent = 'Edit';
-    editBtn.className = ''; 
+    editBtn.className = ''; // reset class agar style inline konsisten
     editBtn.style.backgroundColor = '#2d3a50';
     editBtn.style.color = 'white';
     editBtn.style.border = 'none';
@@ -481,7 +454,7 @@ exportFolderBtn.onclick = () => {
       }
     };
 
-    
+    // Tombol Hapus
     const delBtn = document.createElement('button');
     delBtn.textContent = 'Hapus';
     delBtn.style.backgroundColor = '#2d3a50';
@@ -504,7 +477,7 @@ exportFolderBtn.onclick = () => {
       }
     };
 
-    
+    // Container tombol supaya rapih dan berjajar
     const buttonContainer = document.createElement('div');
     buttonContainer.style.display = 'flex';
     buttonContainer.style.gap = '10px';
@@ -512,7 +485,7 @@ exportFolderBtn.onclick = () => {
     buttonContainer.appendChild(editBtn);
     buttonContainer.appendChild(delBtn);
 
-    
+    // Kosongkan div lalu masukkan teks dan tombol
     div.textContent = '';
     div.appendChild(textSpan);
     div.appendChild(buttonContainer);
@@ -542,7 +515,7 @@ exportFolderBtn.onclick = () => {
 
   renderFolders();
 
-  
+  // --- Flashcard Page ---
   const flashcardPage = document.getElementById('flashcardPage');
   const folderPage = document.getElementById('folderPage');
   const folderTitle = document.getElementById('folderTitle');
@@ -598,9 +571,9 @@ exportFolderBtn.onclick = () => {
   cardInner.appendChild(back);
   flashcard.appendChild(cardInner);
 
-  
+  // ✅ Pasang event flip di flashcard, bukan di cardInner
   flashcard.addEventListener('click', function (e) {
-    
+    // Cegah flip kalau yang diklik adalah tombol hapus
     if (e.target.classList.contains('delete-card-btn')) return;
 
     cardInner.classList.toggle('flipped');
@@ -615,7 +588,7 @@ exportFolderBtn.onclick = () => {
     delBtn.textContent = '×';
     delBtn.title = 'Hapus kartu';
     delBtn.onclick = e => {
-      e.stopPropagation(); 
+      e.stopPropagation(); // Penting: mencegah flip saat klik tombol
       if (confirm('Hapus kartu ini?')) {
         folders[currentFolder].splice(index, 1);
         saveFolders();
@@ -644,7 +617,7 @@ exportFolderBtn.onclick = () => {
     germanInput.value = '';
   };
 
-  
+  // --- Review Page ---
   const reviewPage = document.getElementById('reviewPage');
   const backToFlashcardBtn = document.getElementById('backToFlashcardBtn');
   const reviewFlashcardContainer = document.getElementById('reviewFlashcardContainer');
@@ -653,7 +626,7 @@ exportFolderBtn.onclick = () => {
   startReviewBtn.onclick = () => {
   let count = parseInt(reviewCountInput.value);
   if (isNaN(count) || count < 1) {
-    count = 3; 
+    count = 3; // default kalau kosong atau invalid
   }
   if (!folders[currentFolder] || folders[currentFolder].length === 0) {
     alert('Folder kosong');
@@ -676,7 +649,7 @@ exportFolderBtn.onclick = () => {
   };
 
   function showReviewCard() {
-  
+  // Bersihkan isi container review tanpa menghapus elemen DOM secara kasar
   while (reviewFlashcardContainer.firstChild) {
     reviewFlashcardContainer.removeChild(reviewFlashcardContainer.firstChild);
   }
@@ -693,7 +666,7 @@ exportFolderBtn.onclick = () => {
   reviewFlashcardContainer.appendChild(cardEl);
 
   difficultyButtons.forEach(btn => {
-    
+    // Tambahkan event listener satu kali per panggilan
     btn.onclick = () => {
       card.difficulty = btn.classList.contains('easy') ? 'easy' :
                         btn.classList.contains('medium') ? 'medium' : 'hard';
@@ -705,7 +678,7 @@ exportFolderBtn.onclick = () => {
 
       saveFolders();
       currentReviewIndex++;
-      showReviewCard(); 
+      showReviewCard(); // Tampilkan kartu selanjutnya
     };
   });
 }
@@ -719,22 +692,13 @@ exportFolderBtn.onclick = () => {
   }
 
   function playGermanTTS(text) {
-  if (!('speechSynthesis' in window)) return;
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  const voices = speechSynthesis.getVoices();
-  
-  // Cari voice Jerman asli
-  const germanVoice = voices.find(v => v.lang === 'de-DE');
-
- function playGermanTTS(text) {
     if (!('speechSynthesis' in window)) return;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'de-DE';
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
   }
-
 </script>
+
 </body>
 </html>
