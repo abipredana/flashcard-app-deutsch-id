@@ -700,6 +700,12 @@ exportFolderBtn.onclick = () => {
   const voices = speechSynthesis.getVoices();
   const germanVoice = voices.find(v => v.lang === 'de-DE' && v.name.toLowerCase().includes('anna'));
 
+window.speechSynthesis.onvoiceschanged = () => {
+  // panggil ulang fungsi kalau mau set suara secara dinamis
+};
+
+
+
   if (germanVoice) {
     utterance.voice = germanVoice;
   }
